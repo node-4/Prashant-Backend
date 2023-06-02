@@ -26,20 +26,26 @@ const schema = new mongoose.Schema(
         website: {
             type: String,
         },
-        maximumTicketAmount: {
-            type: Number,
+        registrationNumber: {
+            type: String,
         },
-        minimumTicketAmount: {
-            type: Number,
+        address: {
+            type: String,
         },
-        averageTicketAmount: {
-            type: Number,
+        passportId: {
+            type: String,
         },
-        monthlyTransactionValue: {
-            type: Number,
+        accountNumber: {
+            type: String,
         },
-        previousPayment: {
-            type: Number,
+        swiftCode: {
+            type: String,
+        },
+        bankAddress: {
+            type: String,
+        },
+        recipientName: {
+            type: String,
         },
         otp: {
             type: String,
