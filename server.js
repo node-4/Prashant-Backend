@@ -14,15 +14,17 @@ const PORT = process.env.PORT || 2005;
 mongoose
   .connect(process.env.DB_URL)
   .then(() => {
-    console.log("Db conneted succesfully",process.env.DB_URL);
+    console.log("Db conneted succesfully", process.env.DB_URL);
   })
   .catch((err) => {
     console.log(err);
   });
-app.get("/",(req, res) => {
-  res.status(200).send({msg:"Working App"});
+app.get("/", (req, res) => {
+  res.status(200).send({ msg: "Working App" });
 });
 require("./routes/auth.route")(app);
+require("./routes/adminAuth.route")(app);
+require("./routes/static.route")(app);
 
 
 

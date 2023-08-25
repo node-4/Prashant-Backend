@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const schema = new mongoose.Schema(
     {
+        fullName: {
+            type: String,
+        },
         name: {
             type: String,
         },
@@ -12,6 +15,30 @@ const schema = new mongoose.Schema(
             type: String,
         },
         password: {
+            type: String,
+        },
+        address: {
+            type: String,
+        },
+        language: {
+            type: String,
+        },
+        registrationNumber: {
+            type: String,
+        },
+        passportId: {
+            type: String,
+        },
+        accountNumber: {
+            type: String,
+        },
+        swiftCode: {
+            type: String,
+        },
+        bankAddress: {
+            type: String,
+        },
+        recipientName: {
             type: String,
         },
         company: {
@@ -40,6 +67,10 @@ const schema = new mongoose.Schema(
         },
         otpExpiration: {
             type: Date,
+        },
+        userType: {
+            type: String,
+            enum: ["USER", "ADMIN"],
         },
         accountVerification: {
             type: Boolean,
