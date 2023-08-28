@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const authConfig = require("../configs/auth.config");
 const axios = require('axios');
 const crypto = require('crypto');
+const { log } = require("console");
 exports.registration = async (req, res) => {
     const { phone, email } = req.body;
     try {
@@ -257,19 +258,63 @@ exports.DeletePaymentCard = async (req, res, next) => {
         return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
 };
-exports.networkStorePayment1 = async (req, res) => {
+exports.networkStorePayment = async (req, res) => {
     try {
         const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
         const hash = crypto.createHash('sha256').update(code).digest('hex');
-        req.body.hashcode = hash
-        let body = req.body;
-        console.log("-------------", body);
-        console.log("--------1888-----", body.hashcode);
+        let goodsInfo = [];
+        for (let i = 0; i < req.body.goodsName.length; i++) {
+            let obj1 = {
+                goodsName: req.body.goodsName[i],
+                quantity: req.body.quantity[i],
+                goodsPrice: req.body.goodsPrice[i]
+            }
+            goodsInfo.push(obj1)
+        }
+        let obj = {
+            merNo: req.body.merNo,
+            terNo: req.body.terNo,
+            CharacterSet: req.body.CharacterSet,
+            transType: req.body.transType,
+            transModel: req.body.transModel,
+            apiType: req.body.apiType,
+            amount: req.body.amount,
+            currencyCode: req.body.currencyCode,
+            orderNo: req.body.orderNo,
+            merremark: req.body.merremark,
+            returnURL: req.body.returnURL,
+            merMgrURL: req.body.merMgrURL,
+            language: req.body.language,
+            cardCountry: req.body.cardCountry,
+            cardState: req.body.cardState,
+            cardCity: req.body.cardCity,
+            cardAddress: req.body.cardAddress,
+            cardZipCode: req.body.cardZipCode,
+            payIP: req.body.payIP,
+            cardFullName: req.body.cardFullName,
+            cardFullPhone: req.body.cardFullPhone,
+            grCountry: req.body.grCountry,
+            grState: req.body.grState,
+            grCity: req.body.grCity,
+            grAddress: req.body.grAddress,
+            grZipCode: req.body.grZipCode,
+            grEmail: req.body.grEmail,
+            grphoneNumber: req.body.grphoneNumber,
+            grPerName: req.body.cardFullName,
+            goodsString: {
+                goodsInfo: goodsInfo
+            },
+            cardNO: req.body.cardNO,
+            cvv: req.body.cvv,
+            expMonth: req.body.expMonth,
+            expYear: req.body.expYear,
+            hashcode: hash
+        }
         var url = `https://payment.gantenpay.com/payment/api/payment`;
         axios({
             method: 'post',
             url: url,
-            data: body
+            data: obj
         }).then(function (response) {
             console.log(response.config.data);
             console.log(response.data);
@@ -280,124 +325,109 @@ exports.networkStorePayment1 = async (req, res) => {
             .catch(function (error) {
                 return res.status(501).send({ msg: "error", data: error, });
             });
-    } catch (error) {
-
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-exports.networkStorePayment = async (req, res) => {
-    try {
-        // const code = `amount=${req.body.amount}&currencyCode=${req.body.currencyCode}&merNo=${req.body.merNo}&orderNo=${req.body.orderNo}&respCode=01&respMsg=GetsourceURLfails&terNo=${req.body.terNo}&tradeNo=BA1512281121473675&transType=${req.body.transType}&52400b2fc90e48a9b81cd55a6830281a`
-        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
-        const hash = crypto.createHash('sha256').update(code).digest('hex');
-        req.body.hashcode = hash
-        let body = req.body;
-        console.log("-------------", body);
-        console.log("--------1888-----", body.merNo);
-        return;
-        var url = `https://payment.bringallpay.com/payment/api/payment`;
-        axios({
-            method: 'post',
-            url: url,
-            data: body
-        }).then(function (response) {
-            console.log(response.data);
-            resolve(response)
-            return res.status(200).send({ msg: "Data Payment", data: response, });
-
-        })
-            .catch(function (error) {
-                return res.status(501).send({ msg: "error", data: error, });
-            });
-    } catch (error) {
-
+    } catch (err) {
+        console.log(err);
+        return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
 }
 exports.fastPayPayment = async (req, res) => {
     try {
-        // const code = `amount=${req.body.amount}&currencyCode=${req.body.currencyCode}&merNo=${req.body.merNo}&orderNo=${req.body.orderNo}&respCode=01&respMsg=GetsourceURLfails&terNo=${req.body.terNo}&tradeNo=BA1512281121473675&transType=${req.body.transType}&52400b2fc90e48a9b81cd55a6830281a`
         const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
         const hash = crypto.createHash('sha256').update(code).digest('hex');
-        req.body.hashcode = hash
         let body = req.body;
-        console.log("-------------", body);
         console.log("--------1888-----", body.merNo);
-        return;
-        var url = `https://payment.bringallpay.com/payment/api/payment`;
+        let goodsInfo = [];
+        for (let i = 0; i < req.body.goodsName.length; i++) {
+            let obj1 = {
+                goodsName: req.body.goodsName[i],
+                quantity: req.body.quantity[i],
+                goodsPrice: req.body.goodsPrice[i]
+            }
+            goodsInfo.push(obj1)
+        }
+        let obj = {
+            merNo: req.body.merNo,
+            terNo: req.body.terNo,
+            CharacterSet: req.body.CharacterSet,
+            transType: req.body.transType,
+            transModel: req.body.transModel,
+            apiType: req.body.apiType,
+            amount: req.body.amount,
+            currencyCode: req.body.currencyCode,
+            orderNo: req.body.orderNo,
+            merremark: req.body.merremark,
+            returnURL: req.body.returnURL,
+            merMgrURL: req.body.merMgrURL,
+            language: req.body.language,
+            cardCountry: req.body.cardCountry,
+            cardState: req.body.cardState,
+            cardCity: req.body.cardCity,
+            cardAddress: req.body.cardAddress,
+            cardZipCode: req.body.cardZipCode,
+            payIP: req.body.payIP,
+            cardFullName: req.body.cardFullName,
+            cardFullPhone: req.body.cardFullPhone,
+            grCountry: req.body.grCountry,
+            grState: req.body.grState,
+            grCity: req.body.grCity,
+            grAddress: req.body.grAddress,
+            grZipCode: req.body.grZipCode,
+            grEmail: req.body.grEmail,
+            grphoneNumber: req.body.grphoneNumber,
+            grPerName: req.body.cardFullName,
+            goodsString: {
+                goodsInfo: goodsInfo
+            },
+            cardNO: req.body.cardNO,
+            cvv: req.body.cvv,
+            expMonth: req.body.expMonth,
+            expYear: req.body.expYear,
+            hashcode: hash
+        }
+        console.log(obj);
+        var url = `https://payment.gantenpay.com/fastpay/apply`;
         axios({
             method: 'post',
             url: url,
-            data: body
+            data: obj
         }).then(function (response) {
-            console.log(response.data);
+            console.log(response);
             resolve(response)
             return res.status(200).send({ msg: "Data Payment", data: response, });
-
         })
             .catch(function (error) {
-                return res.status(501).send({ msg: "error", data: error, });
+                console.log(error.response.data);
+                return res.status(501).send({ msg: "error", data: error.response.data, });
             });
-    } catch (error) {
-
+    } catch (err) {
+        console.log(err);
+        return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
 }
 exports.requestForRefund = async (req, res) => {
     try {
         const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&refundCurrency=${req.body.refundCurrency}&refundAmount=${req.body.refundAmount}&busCurrency=${req.body.busCurrency}&busAmount=${req.body.busAmount}&tradeNo=${req.body.tradeNo}&52400b2fc90e48a9b81cd55a6830281a`
         const hash = crypto.createHash('sha256').update(code).digest('hex');
-        req.body.hashcode = hash
-        let body = req.body;
-        console.log("-------------", body);
-        console.log("--------1888-----", body.merNo);
-        return;
-        var url = `https://payment.bringallpay.com/payment/refund/requestForRefund`;
+        let obj = {
+            merNo: req.body.merNo,
+            terNo: req.body.terNo,
+            refundCurrency: req.body.refundCurrency,
+            busCurrency: req.body.busCurrency,
+            refundAmount: req.body.refundAmount,
+            refundReason: req.body.refundReason,
+            busAmount: req.body.busAmount,
+            tradeNo: req.body.tradeNo,
+            hashcode: hash
+        }
+        var url = `https://payment.gantenpay.com/payment/refund/requestForRefund`;
         axios({
             method: 'post',
             url: url,
-            data: body
+            data: obj
         }).then(function (response) {
             console.log(response.data);
             resolve(response)
             return res.status(200).send({ msg: "Data Payment", data: response, });
-
         })
             .catch(function (error) {
                 return res.status(501).send({ msg: "error", data: error, });
@@ -406,30 +436,72 @@ exports.requestForRefund = async (req, res) => {
 
     }
 }
-exports.query = async (req, res) => {
+exports.JumpPayment = async (req, res) => {
     try {
-        const code = `${req.body.merNo}+${req.body.terNo}+${req.body.orderNo}+${req.body.amount}+${req.body.currency}+52400b2fc90e48a9b81cd55a6830281a`
+        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
         const hash = crypto.createHash('sha256').update(code).digest('hex');
-        req.body.hashcode = hash
-        let body = req.body;
-        console.log("-------------", body);
-        console.log("--------1888-----", body.merNo);
-        return;
-        var url = `https://payment.bringallpay.com/payment/external/query`;
+        let goodsInfo = [];
+        for (let i = 0; i < req.body.goodsName.length; i++) {
+            let obj1 = {
+                goodsName: req.body.goodsName[i],
+                quantity: req.body.quantity[i],
+                goodsPrice: req.body.goodsPrice[i]
+            }
+            goodsInfo.push(obj1)
+        }
+        let obj = {
+            merNo: req.body.merNo,
+            terNo: req.body.terNo,
+            CharacterSet: req.body.CharacterSet,
+            transType: req.body.transType,
+            transModel: req.body.transModel,
+            apiType: req.body.apiType,
+            amount: req.body.amount,
+            currencyCode: req.body.currencyCode,
+            orderNo: req.body.orderNo,
+            merremark: req.body.merremark,
+            returnURL: req.body.returnURL,
+            merMgrURL: req.body.merMgrURL,
+            language: req.body.language,
+            cardCountry: req.body.cardCountry,
+            cardState: req.body.cardState,
+            cardCity: req.body.cardCity,
+            cardAddress: req.body.cardAddress,
+            cardZipCode: req.body.cardZipCode,
+            payIP: req.body.payIP,
+            grCountry: req.body.grCountry,
+            grState: req.body.grState,
+            grCity: req.body.grCity,
+            grAddress: req.body.grAddress,
+            grZipCode: req.body.grZipCode,
+            grEmail: req.body.grEmail,
+            grphoneNumber: req.body.grphoneNumber,
+            grPerName: req.body.cardFullName,
+            goodsString: {
+                goodsInfo: goodsInfo
+            },
+            equipment: req.body.equipment,
+            bodyWidth: req.body.bodyWidth,
+            paymentPage: req.body.paymentPage,
+            hashcode: hash
+        }
+        var url = `https://payment.gantenpay.com/payment/api/pay`;
         axios({
             method: 'post',
             url: url,
-            data: body
-        }).then(function (response) {
-            console.log(response.data);
-            resolve(response)
-            return res.status(200).send({ msg: "Data Payment", data: response, });
-
+            data: obj
+        }).then(async function (response) {
+            // console.log(response.config.data);
+            console.log("---------------------------", response.data);
+            // resolve(response)
+            return res.status(200).send(response);
         })
             .catch(function (error) {
-                return res.status(501).send({ msg: "error", data: error, });
+                console.log(error, "00000000000");
+                return res.status(501).send({ data: error, });
             });
-    } catch (error) {
-
+    } catch (err) {
+        console.log(err);
+        return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
 }
