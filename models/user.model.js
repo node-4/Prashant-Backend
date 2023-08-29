@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const schema = new mongoose.Schema(
     {
+        merchantId: {
+            type: String,
+        },
         fullName: {
             type: String,
         },

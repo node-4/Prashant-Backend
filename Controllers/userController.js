@@ -46,6 +46,7 @@ exports.registration = async (req, res) => {
                 req.body.otp = otp;
                 req.body.otpExpiration = Date.now() + 3600000;
                 req.body.userType = "USER";
+                req.body.merchantId = await reffralCode();
                 const userCreate = await User.create(req.body);
                 return res.status(200).send({
                     message: "registered successfully ",
@@ -260,71 +261,77 @@ exports.DeletePaymentCard = async (req, res, next) => {
 };
 exports.networkStorePayment = async (req, res) => {
     try {
-        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
-        const hash = crypto.createHash('sha256').update(code).digest('hex');
-        let goodsInfo = [];
-        for (let i = 0; i < req.body.goodsName.length; i++) {
-            let obj1 = {
-                goodsName: req.body.goodsName[i],
-                quantity: req.body.quantity[i],
-                goodsPrice: req.body.goodsPrice[i]
+        let user = await User.findOne({ merchantId: req.body.merchantId });
+        if (user) {
+            req.body.merNo = 448888;
+            req.body.terNo = 88816;
+            const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
+            const hash = crypto.createHash('sha256').update(code).digest('hex');
+            let goodsInfo = [];
+            for (let i = 0; i < req.body.goodsName.length; i++) {
+                let obj1 = {
+                    goodsName: req.body.goodsName[i],
+                    quantity: req.body.quantity[i],
+                    goodsPrice: req.body.goodsPrice[i]
+                }
+                goodsInfo.push(obj1)
             }
-            goodsInfo.push(obj1)
-        }
-        let obj = {
-            merNo: req.body.merNo,
-            terNo: req.body.terNo,
-            CharacterSet: req.body.CharacterSet,
-            transType: req.body.transType,
-            transModel: req.body.transModel,
-            apiType: req.body.apiType,
-            amount: req.body.amount,
-            currencyCode: req.body.currencyCode,
-            orderNo: req.body.orderNo,
-            merremark: req.body.merremark,
-            returnURL: req.body.returnURL,
-            merMgrURL: req.body.merMgrURL,
-            language: req.body.language,
-            cardCountry: req.body.cardCountry,
-            cardState: req.body.cardState,
-            cardCity: req.body.cardCity,
-            cardAddress: req.body.cardAddress,
-            cardZipCode: req.body.cardZipCode,
-            payIP: req.body.payIP,
-            cardFullName: req.body.cardFullName,
-            cardFullPhone: req.body.cardFullPhone,
-            grCountry: req.body.grCountry,
-            grState: req.body.grState,
-            grCity: req.body.grCity,
-            grAddress: req.body.grAddress,
-            grZipCode: req.body.grZipCode,
-            grEmail: req.body.grEmail,
-            grphoneNumber: req.body.grphoneNumber,
-            grPerName: req.body.cardFullName,
-            goodsString: {
-                goodsInfo: goodsInfo
-            },
-            cardNO: req.body.cardNO,
-            cvv: req.body.cvv,
-            expMonth: req.body.expMonth,
-            expYear: req.body.expYear,
-            hashcode: hash
-        }
-        var url = `https://payment.gantenpay.com/payment/api/payment`;
-        axios({
-            method: 'post',
-            url: url,
-            data: obj
-        }).then(function (response) {
-            console.log(response.config.data);
-            console.log(response.data);
-            resolve(response)
-            return res.status(200).send({ msg: "Data Payment", data: response, });
+            let obj = {
+                merNo: req.body.merNo,
+                terNo: req.body.terNo,
+                CharacterSet: req.body.CharacterSet,
+                transType: req.body.transType,
+                transModel: req.body.transModel,
+                apiType: req.body.apiType,
+                amount: req.body.amount,
+                currencyCode: req.body.currencyCode,
+                orderNo: req.body.orderNo,
+                merremark: req.body.merremark,
+                returnURL: req.body.returnURL,
+                merMgrURL: req.body.merMgrURL,
+                language: req.body.language,
+                cardCountry: req.body.cardCountry,
+                cardState: req.body.cardState,
+                cardCity: req.body.cardCity,
+                cardAddress: req.body.cardAddress,
+                cardZipCode: req.body.cardZipCode,
+                payIP: req.body.payIP,
+                cardFullName: req.body.cardFullName,
+                cardFullPhone: req.body.cardFullPhone,
+                grCountry: req.body.grCountry,
+                grState: req.body.grState,
+                grCity: req.body.grCity,
+                grAddress: req.body.grAddress,
+                grZipCode: req.body.grZipCode,
+                grEmail: req.body.grEmail,
+                grphoneNumber: req.body.grphoneNumber,
+                grPerName: req.body.cardFullName,
+                goodsString: {
+                    goodsInfo: goodsInfo
+                },
+                cardNO: req.body.cardNO,
+                cvv: req.body.cvv,
+                expMonth: req.body.expMonth,
+                expYear: req.body.expYear,
+                hashcode: hash
+            }
+            var url = `https://payment.gantenpay.com/payment/api/payment`;
+            axios({
+                method: 'post',
+                url: url,
+                data: obj
+            }).then(function (response) {
+                console.log(response.config.data);
+                console.log(response.data);
+                resolve(response)
+                return res.status(200).send({ msg: "Data Payment", data: response, });
 
-        })
-            .catch(function (error) {
+            }).catch(function (error) {
                 return res.status(501).send({ msg: "error", data: error, });
             });
+        } else {
+            return res.status(404).send({ msg: "MerchantId not matched", data: {}, });
+        }
     } catch (err) {
         console.log(err);
         return res.status(501).send({ status: 501, message: "server error.", data: {}, });
@@ -332,73 +339,78 @@ exports.networkStorePayment = async (req, res) => {
 }
 exports.fastPayPayment = async (req, res) => {
     try {
-        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
-        const hash = crypto.createHash('sha256').update(code).digest('hex');
-        let body = req.body;
-        console.log("--------1888-----", body.merNo);
-        let goodsInfo = [];
-        for (let i = 0; i < req.body.goodsName.length; i++) {
-            let obj1 = {
-                goodsName: req.body.goodsName[i],
-                quantity: req.body.quantity[i],
-                goodsPrice: req.body.goodsPrice[i]
+        let user = await User.findOne({ merchantId: req.body.merchantId });
+        if (user) {
+            const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
+            const hash = crypto.createHash('sha256').update(code).digest('hex');
+            let body = req.body;
+            console.log("--------1888-----", body.merNo);
+            let goodsInfo = [];
+            for (let i = 0; i < req.body.goodsName.length; i++) {
+                let obj1 = {
+                    goodsName: req.body.goodsName[i],
+                    quantity: req.body.quantity[i],
+                    goodsPrice: req.body.goodsPrice[i]
+                }
+                goodsInfo.push(obj1)
             }
-            goodsInfo.push(obj1)
+            let obj = {
+                merNo: req.body.merNo,
+                terNo: req.body.terNo,
+                CharacterSet: req.body.CharacterSet,
+                transType: req.body.transType,
+                transModel: req.body.transModel,
+                apiType: req.body.apiType,
+                amount: req.body.amount,
+                currencyCode: req.body.currencyCode,
+                orderNo: req.body.orderNo,
+                merremark: req.body.merremark,
+                returnURL: req.body.returnURL,
+                merMgrURL: req.body.merMgrURL,
+                language: req.body.language,
+                cardCountry: req.body.cardCountry,
+                cardState: req.body.cardState,
+                cardCity: req.body.cardCity,
+                cardAddress: req.body.cardAddress,
+                cardZipCode: req.body.cardZipCode,
+                payIP: req.body.payIP,
+                cardFullName: req.body.cardFullName,
+                cardFullPhone: req.body.cardFullPhone,
+                grCountry: req.body.grCountry,
+                grState: req.body.grState,
+                grCity: req.body.grCity,
+                grAddress: req.body.grAddress,
+                grZipCode: req.body.grZipCode,
+                grEmail: req.body.grEmail,
+                grphoneNumber: req.body.grphoneNumber,
+                grPerName: req.body.cardFullName,
+                goodsString: {
+                    goodsInfo: goodsInfo
+                },
+                cardNO: req.body.cardNO,
+                cvv: req.body.cvv,
+                expMonth: req.body.expMonth,
+                expYear: req.body.expYear,
+                hashcode: hash
+            }
+            console.log(obj);
+            var url = `https://payment.gantenpay.com/fastpay/apply`;
+            axios({
+                method: 'post',
+                url: url,
+                data: obj
+            }).then(function (response) {
+                console.log(response);
+                resolve(response)
+                return res.status(200).send({ msg: "Data Payment", data: response, });
+            })
+                .catch(function (error) {
+                    console.log(error.response.data);
+                    return res.status(501).send({ msg: "error", data: error.response.data, });
+                });
+        } else {
+            return res.status(404).send({ msg: "MerchantId not matched", data: {}, });
         }
-        let obj = {
-            merNo: req.body.merNo,
-            terNo: req.body.terNo,
-            CharacterSet: req.body.CharacterSet,
-            transType: req.body.transType,
-            transModel: req.body.transModel,
-            apiType: req.body.apiType,
-            amount: req.body.amount,
-            currencyCode: req.body.currencyCode,
-            orderNo: req.body.orderNo,
-            merremark: req.body.merremark,
-            returnURL: req.body.returnURL,
-            merMgrURL: req.body.merMgrURL,
-            language: req.body.language,
-            cardCountry: req.body.cardCountry,
-            cardState: req.body.cardState,
-            cardCity: req.body.cardCity,
-            cardAddress: req.body.cardAddress,
-            cardZipCode: req.body.cardZipCode,
-            payIP: req.body.payIP,
-            cardFullName: req.body.cardFullName,
-            cardFullPhone: req.body.cardFullPhone,
-            grCountry: req.body.grCountry,
-            grState: req.body.grState,
-            grCity: req.body.grCity,
-            grAddress: req.body.grAddress,
-            grZipCode: req.body.grZipCode,
-            grEmail: req.body.grEmail,
-            grphoneNumber: req.body.grphoneNumber,
-            grPerName: req.body.cardFullName,
-            goodsString: {
-                goodsInfo: goodsInfo
-            },
-            cardNO: req.body.cardNO,
-            cvv: req.body.cvv,
-            expMonth: req.body.expMonth,
-            expYear: req.body.expYear,
-            hashcode: hash
-        }
-        console.log(obj);
-        var url = `https://payment.gantenpay.com/fastpay/apply`;
-        axios({
-            method: 'post',
-            url: url,
-            data: obj
-        }).then(function (response) {
-            console.log(response);
-            resolve(response)
-            return res.status(200).send({ msg: "Data Payment", data: response, });
-        })
-            .catch(function (error) {
-                console.log(error.response.data);
-                return res.status(501).send({ msg: "error", data: error.response.data, });
-            });
     } catch (err) {
         console.log(err);
         return res.status(501).send({ status: 501, message: "server error.", data: {}, });
@@ -406,102 +418,120 @@ exports.fastPayPayment = async (req, res) => {
 }
 exports.requestForRefund = async (req, res) => {
     try {
-        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&refundCurrency=${req.body.refundCurrency}&refundAmount=${req.body.refundAmount}&busCurrency=${req.body.busCurrency}&busAmount=${req.body.busAmount}&tradeNo=${req.body.tradeNo}&52400b2fc90e48a9b81cd55a6830281a`
-        const hash = crypto.createHash('sha256').update(code).digest('hex');
-        let obj = {
-            merNo: req.body.merNo,
-            terNo: req.body.terNo,
-            refundCurrency: req.body.refundCurrency,
-            busCurrency: req.body.busCurrency,
-            refundAmount: req.body.refundAmount,
-            refundReason: req.body.refundReason,
-            busAmount: req.body.busAmount,
-            tradeNo: req.body.tradeNo,
-            hashcode: hash
+        let user = await User.findOne({ merchantId: req.body.merchantId });
+        if (user) {
+            const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&refundCurrency=${req.body.refundCurrency}&refundAmount=${req.body.refundAmount}&busCurrency=${req.body.busCurrency}&busAmount=${req.body.busAmount}&tradeNo=${req.body.tradeNo}&52400b2fc90e48a9b81cd55a6830281a`
+            const hash = crypto.createHash('sha256').update(code).digest('hex');
+            let obj = {
+                merNo: req.body.merNo,
+                terNo: req.body.terNo,
+                refundCurrency: req.body.refundCurrency,
+                busCurrency: req.body.busCurrency,
+                refundAmount: req.body.refundAmount,
+                refundReason: req.body.refundReason,
+                busAmount: req.body.busAmount,
+                tradeNo: req.body.tradeNo,
+                hashcode: hash
+            }
+            var url = `https://payment.gantenpay.com/payment/refund/requestForRefund`;
+            axios({
+                method: 'post',
+                url: url,
+                data: obj
+            }).then(function (response) {
+                console.log(response.data);
+                resolve(response)
+                return res.status(200).send({ msg: "Data Payment", data: response, });
+            })
+                .catch(function (error) {
+                    return res.status(501).send({ msg: "error", data: error, });
+                });
+        } else {
+            return res.status(404).send({ msg: "MerchantId not matched", data: {}, });
         }
-        var url = `https://payment.gantenpay.com/payment/refund/requestForRefund`;
-        axios({
-            method: 'post',
-            url: url,
-            data: obj
-        }).then(function (response) {
-            console.log(response.data);
-            resolve(response)
-            return res.status(200).send({ msg: "Data Payment", data: response, });
-        })
-            .catch(function (error) {
-                return res.status(501).send({ msg: "error", data: error, });
-            });
     } catch (error) {
 
     }
 }
 exports.JumpPayment = async (req, res) => {
     try {
-        const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
-        const hash = crypto.createHash('sha256').update(code).digest('hex');
-        let goodsInfo = [];
-        for (let i = 0; i < req.body.goodsName.length; i++) {
-            let obj1 = {
-                goodsName: req.body.goodsName[i],
-                quantity: req.body.quantity[i],
-                goodsPrice: req.body.goodsPrice[i]
+        let user = await User.findOne({ merchantId: req.body.merchantId });
+        if (user) {
+            const code = `EncryptionMode=SHA256&CharacterSet=UTF8&merNo=${req.body.merNo}&terNo=${req.body.terNo}&orderNo=${req.body.orderNo}&currencyCode=${req.body.currencyCode}&amount=${req.body.amount}&payIP=${req.body.payIP}&transType=${req.body.transType}&transModel=${req.body.transModel}&52400b2fc90e48a9b81cd55a6830281a`
+            const hash = crypto.createHash('sha256').update(code).digest('hex');
+            let goodsInfo = [];
+            for (let i = 0; i < req.body.goodsName.length; i++) {
+                let obj1 = {
+                    goodsName: req.body.goodsName[i],
+                    quantity: req.body.quantity[i],
+                    goodsPrice: req.body.goodsPrice[i]
+                }
+                goodsInfo.push(obj1)
             }
-            goodsInfo.push(obj1)
+            let obj = {
+                merNo: req.body.merNo,
+                terNo: req.body.terNo,
+                CharacterSet: req.body.CharacterSet,
+                transType: req.body.transType,
+                transModel: req.body.transModel,
+                apiType: req.body.apiType,
+                amount: req.body.amount,
+                currencyCode: req.body.currencyCode,
+                orderNo: req.body.orderNo,
+                merremark: req.body.merremark,
+                returnURL: req.body.returnURL,
+                merMgrURL: req.body.merMgrURL,
+                language: req.body.language,
+                cardCountry: req.body.cardCountry,
+                cardState: req.body.cardState,
+                cardCity: req.body.cardCity,
+                cardAddress: req.body.cardAddress,
+                cardZipCode: req.body.cardZipCode,
+                payIP: req.body.payIP,
+                grCountry: req.body.grCountry,
+                grState: req.body.grState,
+                grCity: req.body.grCity,
+                grAddress: req.body.grAddress,
+                grZipCode: req.body.grZipCode,
+                grEmail: req.body.grEmail,
+                grphoneNumber: req.body.grphoneNumber,
+                grPerName: req.body.cardFullName,
+                goodsString: {
+                    goodsInfo: goodsInfo
+                },
+                equipment: req.body.equipment,
+                bodyWidth: req.body.bodyWidth,
+                paymentPage: req.body.paymentPage,
+                hashcode: hash
+            }
+            var url = `https://payment.gantenpay.com/payment/api/pay`;
+            axios({
+                method: 'post',
+                url: url,
+                data: obj
+            }).then(async function (response) {
+                // console.log(response.config.data);
+                console.log("---------------------------", response.data);
+                // resolve(response)
+                return res.status(200).send(response);
+            })
+                .catch(function (error) {
+                    console.log(error, "00000000000");
+                    return res.status(501).send({ data: error, });
+                });
+        } else {
+            return res.status(404).send({ msg: "MerchantId not matched", data: {}, });
         }
-        let obj = {
-            merNo: req.body.merNo,
-            terNo: req.body.terNo,
-            CharacterSet: req.body.CharacterSet,
-            transType: req.body.transType,
-            transModel: req.body.transModel,
-            apiType: req.body.apiType,
-            amount: req.body.amount,
-            currencyCode: req.body.currencyCode,
-            orderNo: req.body.orderNo,
-            merremark: req.body.merremark,
-            returnURL: req.body.returnURL,
-            merMgrURL: req.body.merMgrURL,
-            language: req.body.language,
-            cardCountry: req.body.cardCountry,
-            cardState: req.body.cardState,
-            cardCity: req.body.cardCity,
-            cardAddress: req.body.cardAddress,
-            cardZipCode: req.body.cardZipCode,
-            payIP: req.body.payIP,
-            grCountry: req.body.grCountry,
-            grState: req.body.grState,
-            grCity: req.body.grCity,
-            grAddress: req.body.grAddress,
-            grZipCode: req.body.grZipCode,
-            grEmail: req.body.grEmail,
-            grphoneNumber: req.body.grphoneNumber,
-            grPerName: req.body.cardFullName,
-            goodsString: {
-                goodsInfo: goodsInfo
-            },
-            equipment: req.body.equipment,
-            bodyWidth: req.body.bodyWidth,
-            paymentPage: req.body.paymentPage,
-            hashcode: hash
-        }
-        var url = `https://payment.gantenpay.com/payment/api/pay`;
-        axios({
-            method: 'post',
-            url: url,
-            data: obj
-        }).then(async function (response) {
-            // console.log(response.config.data);
-            console.log("---------------------------", response.data);
-            // resolve(response)
-            return res.status(200).send(response);
-        })
-            .catch(function (error) {
-                console.log(error, "00000000000");
-                return res.status(501).send({ data: error, });
-            });
     } catch (err) {
         console.log(err);
         return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
+}
+const reffralCode = async () => {
+    var digits = "1234567890123456789012345678901234567890";
+    let OTP = '';
+    for (let i = 0; i < 6; i++) {
+        OTP += digits[Math.floor(Math.random() * 36)];
+    }
+    return OTP;
 }
