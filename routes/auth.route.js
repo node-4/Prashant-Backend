@@ -1,5 +1,6 @@
 const auth = require("../Controllers/userController");
 const authJwt = require('../middlewares/authJwt')
+const cryptoApi = require("../Controllers/cryptoApi");
 module.exports = (app) => {
     app.post("/api/v1/auth/signup", auth.registration);
     app.post("/api/v1/auth/login/:id/verify", auth.verifyOtp);
@@ -13,13 +14,11 @@ module.exports = (app) => {
     app.post("/api/v1/auth/fastPayPayment", auth.fastPayPayment);
     app.post("/api/v1/auth/requestForRefund", auth.requestForRefund);
     app.post("/api/v1/auth/JumpPayment", auth.JumpPayment);
-
-
-
-
-
-
-
+    app.post("/api/v1/createExchangeTransaction", [authJwt.verifyToken], cryptoApi.createExchangeTransaction);
+    app.post("/api/v1/createApiv2ExchangeTransaction", [authJwt.verifyToken], cryptoApi.createApiv2ExchangeTransaction);
+    app.get("/api/v1/checkTransactionStatus/:id", [authJwt.verifyToken], cryptoApi.checkTransactionStatus);
+    app.get("/api/v1/listTransaction", [authJwt.verifyToken], cryptoApi.listTransaction);
+    app.get("/api/v1/checkApiv2TransactionStatus1/:id", [authJwt.verifyToken], cryptoApi.checkTransactionStatus1);
 
     // app.post("/api/v1/auth/query", auth.query);
 
