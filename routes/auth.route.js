@@ -19,7 +19,19 @@ module.exports = (app) => {
     app.get("/api/v1/checkTransactionStatus/:id", [authJwt.verifyToken], cryptoApi.checkTransactionStatus);
     app.get("/api/v1/listTransaction", [authJwt.verifyToken], cryptoApi.listTransaction);
     app.get("/api/v1/checkApiv2TransactionStatus1/:id", [authJwt.verifyToken], cryptoApi.checkTransactionStatus1);
-
+    app.get("/api/v1/findExchangeRange", [authJwt.verifyToken], cryptoApi.findExchangeRange);
+    app.get("/api/v1/findMinimalExchangeAmount", [authJwt.verifyToken], cryptoApi.findMinimalExchangeAmount);
+    app.get("/api/v1/findAvailableCurrency", [authJwt.verifyToken], cryptoApi.findAvailableCurrency);
+    app.get("/api/v1/addressValidate", [authJwt.verifyToken], cryptoApi.addressValidate);
+    app.get("/api/v1/estimatedExchangeNetworkFee", [authJwt.verifyToken], cryptoApi.estimatedExchangeNetworkFee);
+    app.get("/api/v1/MarketEstimateFiatandCrypto", [authJwt.verifyToken], cryptoApi.MarketEstimateFiatandCrypto);
+    app.get("/api/v1/fiatCurrencies", cryptoApi.fiatCurrencies);
+    app.get("/api/v1/currencyInfo", cryptoApi.currencyInfo);
+    app.get("/api/v1/listofAvailablecurrencies", cryptoApi.listofAvailablecurrencies);
+    app.get("/api/v1/listofAvailablecurrenciesforSpecificcurrency", cryptoApi.listofAvailablecurrenciesforSpecificcurrency);
+    app.get("/api/v1/estimatedExchangeAmount", cryptoApi.estimatedExchangeAmount);
+    app.get("/api/v1/minimalExchangeAmountStandardFlow", cryptoApi.minimalExchangeAmountStandardFlow);
+    app.get("/api/v1/exchangeRangeStandardFlow", cryptoApi.exchangeRangeStandardFlow);
+    app.get("/api/v1/listofAvailablePairsStandardFlow", cryptoApi.listofAvailablePairsStandardFlow);
     // app.post("/api/v1/auth/query", auth.query);
-
 }
