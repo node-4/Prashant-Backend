@@ -412,7 +412,7 @@ exports.fiatCurrencies = async (req, res, next) => {
                         });
         } catch (error) {
                 console.error('Error:', error.message);
-                res.status(500).json({ error: 'An error occurred while fetching data from Changenow.' });
+                return res.status(500).json({ error: 'An error occurred while fetching data from Changenow.' });
         }
 }
 exports.currencyInfo = async (req, res, next) => {
@@ -426,7 +426,7 @@ exports.currencyInfo = async (req, res, next) => {
                         });
         } catch (error) {
                 console.error('Error:', error.message);
-                res.status(500).json({ error: 'An error occurred while fetching data from Changenow.' });
+                return res.status(500).json({ error: 'An error occurred while fetching data from Changenow.' });
         }
 }
 exports.listofAvailablecurrencies = async (req, res, next) => {
