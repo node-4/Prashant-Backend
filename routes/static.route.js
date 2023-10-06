@@ -1,4 +1,4 @@
-const staticContent = require('../controllers/static.Controller');
+const staticContent = require('../Controllers/static.Controller');
 const { authJwt, authorizeRoles } = require("../middlewares");
 module.exports = (app) => {
     app.post('/api/v1/static/createAboutus', [authJwt.verifyToken], staticContent.createAboutUs);
