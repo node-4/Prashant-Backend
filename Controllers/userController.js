@@ -1,4 +1,3 @@
-const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 const userCard = require("../models/userCard")
 const jwt = require("jsonwebtoken");
@@ -7,7 +6,6 @@ const nodemailer = require("nodemailer");
 const authConfig = require("../configs/auth.config");
 const axios = require('axios');
 const crypto = require('crypto');
-const { log } = require("console");
 exports.registration = async (req, res) => {
     const { phone, email } = req.body;
     try {
