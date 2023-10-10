@@ -23,6 +23,9 @@ const schema = new mongoose.Schema(
         address: {
             type: String,
         },
+        profilePic: {
+            type: String,
+        },
         language: {
             type: String,
         },

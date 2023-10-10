@@ -1,11 +1,13 @@
 const auth = require("../Controllers/userController");
 const authJwt = require('../middlewares/authJwt')
 const cryptoApi = require("../Controllers/cryptoApi");
+const { upload } = require('../middlewares/imageUpload')
 module.exports = (app) => {
     app.post("/api/v1/auth/signup", auth.registration);
     app.post("/api/v1/auth/login/:id/verify", auth.verifyOtp);
     app.post("/api/v1/auth/login", auth.login);
     app.post("/api/v1/resendotp/:id", auth.resendOTP);
+    app.put("/api/v1/user/update", [authJwt.verifyToken], upload.single('image'), auth.update);
     app.post("/api/v1/user/card/new", [authJwt.verifyToken], auth.createPaymentCard);
     app.put("/api/v1/user/card/update/:id", [authJwt.verifyToken], auth.updatePaymentCard);
     app.get("/api/v1/user/card/getAllCard", [authJwt.verifyToken], auth.getPaymentCard);

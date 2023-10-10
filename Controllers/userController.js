@@ -90,6 +90,25 @@ exports.verifyOtp = async (req, res) => {
         return res.status(500).send({ error: "internal server error" + err.message });
     }
 };
+exports.update = async (req, res) => {
+    try {
+        const user = await User.findById({ _id: req.user._id });
+        if (user) {
+            if (req.file) {
+                req.body.profilePic = req.file.path;
+            }
+            let obj = {
+                profilePic: req.body.profilePic || user.profilePic,
+            }
+            const newUser = await User.findByIdAndUpdate({ _id: user._id }, { $set: obj }, { new: true });
+            return res.status(200).json({ status: 200, message: 'User update successfully', data: newUser });
+        }
+        return res.status(404).json({ message: "user not Found", status: 404, data: {}, });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
 exports.login = async (req, res) => {
     const { email } = req.body;
     try {
