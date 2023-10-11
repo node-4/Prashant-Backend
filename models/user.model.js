@@ -82,6 +82,10 @@ const schema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        notification: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

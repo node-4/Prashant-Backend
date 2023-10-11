@@ -7,7 +7,12 @@ module.exports = (app) => {
     app.post("/api/v1/auth/login/:id/verify", auth.verifyOtp);
     app.post("/api/v1/auth/login", auth.login);
     app.post("/api/v1/resendotp/:id", auth.resendOTP);
+    app.put("/api/v1/user/updateNotification", [authJwt.verifyToken], auth.updateNotification);
     app.put("/api/v1/user/update", [authJwt.verifyToken], upload.single('image'), auth.update);
+    app.post("/api/v1/help/addQuery", auth.addQuery);
+    app.get("/api/v1/help/all", auth.getAllHelpandSupport);
+    app.get("/api/v1/help/:id", auth.getHelpandSupportById);
+    app.delete("/api/v1/help/:id", auth.deleteHelpandSupport);
     app.post("/api/v1/user/card/new", [authJwt.verifyToken], auth.createPaymentCard);
     app.put("/api/v1/user/card/update/:id", [authJwt.verifyToken], auth.updatePaymentCard);
     app.get("/api/v1/user/card/getAllCard", [authJwt.verifyToken], auth.getPaymentCard);

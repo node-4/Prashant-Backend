@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 var newOTP = require("otp-generators");
 const nodemailer = require("nodemailer");
 const authConfig = require("../configs/auth.config");
+const helpandSupport = require("../models/helpAndSupport");
 const axios = require('axios');
 const crypto = require('crypto');
 exports.registration = async (req, res) => {
@@ -196,6 +197,25 @@ exports.resendOTP = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: "Server error" + error.message });
+    }
+};
+exports.updateNotification = async (req, res) => {
+    try {
+        const user = await User.findById({ _id: req.user._id });
+        if (user) {
+            if (user.notification == true) {
+                const newUser = await User.findByIdAndUpdate({ _id: user._id }, { $set: { notification: false } }, { new: true });
+                return res.status(200).json({ status: 200, message: 'Notification update successfully', data: newUser });
+            } else {
+                const newUser = await User.findByIdAndUpdate({ _id: user._id }, { $set: { notification: true } }, { new: true });
+                return res.status(200).json({ status: 200, message: 'Notification update successfully', data: newUser });
+
+            }
+        }
+        return res.status(404).json({ message: "user not Found", status: 404, data: {}, });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 exports.createPaymentCard = async (req, res, next) => {
@@ -544,6 +564,53 @@ exports.JumpPayment = async (req, res) => {
         return res.status(501).send({ status: 501, message: "server error.", data: {}, });
     }
 }
+exports.addQuery = async (req, res) => {
+    try {
+        if ((req.body.name == (null || undefined)) || (req.body.email == (null || undefined)) || (req.body.name == "") || (req.body.email == "")) {
+            return res.status(404).json({ message: "name and email provide!", status: 404, data: {} });
+        } else {
+            const Data = await helpandSupport.create(req.body);
+            return res.status(200).json({ message: "Help and Support  create.", status: 200, data: Data });
+        }
+
+    } catch (err) {
+        return res.status(500).send({ msg: "internal server error", error: err.message, });
+    }
+};
+exports.getAllHelpandSupport = async (req, res) => {
+    try {
+        const data = await helpandSupport.find();
+        if (data.length == 0) {
+            return res.status(404).json({ message: "Help and Support not found.", status: 404, data: {} });
+        }
+        return res.status(200).json({ message: "Help and Support  found.", status: 200, data: data });
+    } catch (err) {
+        return res.status(500).send({ msg: "internal server error", error: err.message, });
+    }
+};
+exports.getHelpandSupportById = async (req, res) => {
+    try {
+        const data = await helpandSupport.findById(req.params.id);
+        if (!data) {
+            return res.status(404).json({ message: "Help and Support not found.", status: 404, data: {} });
+        }
+        return res.status(200).json({ message: "Help and Support  found.", status: 200, data: data });
+    } catch (err) {
+        return res.status(500).send({ msg: "internal server error", error: err.message, });
+    }
+};
+exports.deleteHelpandSupport = async (req, res) => {
+    try {
+        const data = await helpandSupport.findById(req.params.id);
+        if (!data) {
+            return res.status(404).json({ message: "Help and Support not found.", status: 404, data: {} });
+        }
+        await helpandSupport.deleteOne({ _id: req.params.id });
+        return res.status(200).json({ message: "Help and Support  delete.", status: 200, data: {} });
+    } catch (err) {
+        return res.status(500).send({ msg: "internal server error", error: err.message, });
+    }
+};
 const reffralCode = async () => {
     var digits = "1234567890123456789012345678901234567890";
     let OTP = '';
