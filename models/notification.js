@@ -3,7 +3,7 @@ const Schema = Mongoose.Schema;
 var notificationModel = new Schema({
         userId: {
                 type: Mongoose.Schema.Types.ObjectId,
-                ref: "user"
+                ref: "User"
         },
         title: {
                 type: String
@@ -23,4 +23,7 @@ var notificationModel = new Schema({
                 default: "ACTIVE"
         },
 }, { timestamps: true });
-module.exports = Mongoose.model("notification", notificationModel);
+
+const banner = Mongoose.model("notification", notificationModel);
+
+module.exports = banner;
