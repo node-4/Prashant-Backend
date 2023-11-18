@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const authConfig = require("../configs/auth.config");
 const axios = require('axios');
 const crypto = require('crypto');
+const { log } = require("console");
 
 exports.networkStorePayment = async (req, res) => {
     try {
@@ -118,3 +119,71 @@ exports.query = async (req, res) => {
 
     }
 }
+
+exports.query1 = async (req, res) => {
+    try {
+        // Extract data from the request body
+        const { merNo,
+            amount,
+            billNo,
+            currency,
+            language,
+            returnURL,
+            notifyUrl,
+            tradeUrl,
+            lastName,
+            firstName,
+            country,
+            state,
+            city,
+            address,
+            zipCode,
+            email,
+            phone,
+            shippingFirstName,
+            shippingLastName,
+            shippingCountry,
+            shippingState,
+            shippingCity,
+            shippingAddress,
+            shippingZipCode,
+            shippingEmail,
+            shippingPhone,
+            cardNum,
+            year,
+            month,
+            cvv2,
+            cardBank,
+            productInfo,
+            nationalCode,
+            ip,
+            md5Info,
+            acceptLanguage,
+            userAgent,
+            timeZone,
+            javascriptEnabled, } = req.body;
+        console.log(req.body);
+        var url = `https://testurl.carespay.com:28081/carespay/pay`;
+        axios({
+            method: 'post',
+            url: url,
+            data: req.body
+        }).then(function (response) {
+            console.log(response.data);
+            resolve(response)
+            return res.status(200).send({ msg: "Data Payment", data: response, });
+
+        })
+            .catch(function (error) {
+                return res.status(501).send({ msg: "error", data: error, });
+            });
+
+
+        // const response = await axios.post('https://testurl.carespay.com:28081/carespay/pay', req.body);
+        // // Send the response back to the client
+        // return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

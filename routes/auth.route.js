@@ -2,7 +2,79 @@ const auth = require("../Controllers/userController");
 const authJwt = require('../middlewares/authJwt')
 const cryptoApi = require("../Controllers/cryptoApi");
 const { upload } = require('../middlewares/imageUpload')
+const auth1 = require("../Controllers/thirdPartyApi");
 module.exports = (app) => {
+    app.post("/api/v1/auth/query", auth1.query1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     app.post("/api/v1/auth/signup", auth.registration);
     app.post("/api/v1/auth/login/:id/verify", auth.verifyOtp);
     app.post("/api/v1/auth/login", auth.login);
@@ -40,5 +112,4 @@ module.exports = (app) => {
     app.get("/api/v1/minimalExchangeAmountStandardFlow", cryptoApi.minimalExchangeAmountStandardFlow);
     app.get("/api/v1/exchangeRangeStandardFlow", cryptoApi.exchangeRangeStandardFlow);
     app.get("/api/v1/listofAvailablePairsStandardFlow", cryptoApi.listofAvailablePairsStandardFlow);
-    // app.post("/api/v1/auth/query", auth.query);
 }
