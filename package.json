@@ -32,6 +32,7 @@
     "nodemon": "^2.0.22",
     "otp-generators": "^1.0.3",
     "path": "^0.12.7",
+    "querystring": "^0.2.1",
     "serverless": "^3.32.0",
     "serverless-http": "^3.2.0",
     "vercel": "^30.0.0"

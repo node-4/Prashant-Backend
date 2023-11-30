@@ -162,12 +162,15 @@ exports.query1 = async (req, res) => {
             userAgent,
             timeZone,
             javascriptEnabled, } = req.body;
-        console.log(req.body);
         var url = `https://testurl.carespay.com:28081/carespay/pay`;
-        axios({
-            method: 'post',
-            url: url,
-            data: req.body
+        const qs = require('querystring');
+        req.body.md5Info = merNo + billNo + currency + amount + returnURL + '^Qdb}Kzy'
+        console.log(req.body);
+        const formData = qs.stringify(req.body);
+        axios.post(url, formData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
         }).then(function (response) {
             console.log(response.data);
             resolve(response)
@@ -177,6 +180,28 @@ exports.query1 = async (req, res) => {
             .catch(function (error) {
                 return res.status(501).send({ msg: "error", data: error, });
             });
+
+
+
+
+
+
+
+
+
+        // axios({
+        //     method: 'post',
+        //     url: url,
+        //     data: req.body
+        // }).then(function (response) {
+        //     console.log(response.data);
+        //     resolve(response)
+        //     return res.status(200).send({ msg: "Data Payment", data: response, });
+
+        // })
+        //     .catch(function (error) {
+        //         return res.status(501).send({ msg: "error", data: error, });
+        //     });
 
 
         // const response = await axios.post('https://testurl.carespay.com:28081/carespay/pay', req.body);
