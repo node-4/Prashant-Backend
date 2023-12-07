@@ -265,6 +265,24 @@ exports.query1 = async (req, res) => {
             },
         }).then(function (response) {
             console.log(response);
+            // data: {
+            //     code: 'P0001',
+            //     message: 'payment successful!|TEST DESCRIPTOR：SUCC',
+            //     orderNo: '10014017019504553432',
+            //     merNo: '100140',
+            //     billNo: 'ORDER8975391',
+            //     amount: '100.00',
+            //     currency: '1',
+            //     tradeStatus: 'S0001',
+            //     returnURL: 'http://your-return-url.com',
+            //     md5Info: 'e5ce3caf83056a4b2ee6a09da34a9c29',
+            //     tradeTime: 1701950454917,
+            //     auth3DUrl: null,
+            //     billAddr: 'TEST',
+            //     rebillToken: 'n1U2w0S7l262G76pXMS/9bOI67yQ==',
+            //     threeDSecure: '',
+            //     cnyexchangeRate: '7.1371'
+            //   }
             const responseData = {
                 code: response.data.code,
                 message: response.data.message,
