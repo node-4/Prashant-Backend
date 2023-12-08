@@ -5,8 +5,13 @@ const { upload } = require('../middlewares/imageUpload')
 const auth1 = require("../Controllers/thirdPartyApi");
 module.exports = (app) => {
     app.post("/api/v1/auth/query", auth1.query1);
+    app.post("/api/v1/auth/initiateRebill", auth1.initiateRebill);
+    app.post("/api/v1/auth/queryorder", auth1.queryorder);
+    app.post("/api/v1/auth/querybatchlist", auth1.querybatchlist);
 
 
+    app.post("/api/v1/auth/getRebillToken", auth1.getRebillToken);
+    app.post("/api/v1/auth/refund", auth1.refund);
 
 
 
@@ -74,7 +79,6 @@ module.exports = (app) => {
 
 
 
-    
     app.post("/api/v1/auth/signup", auth.registration);
     app.post("/api/v1/auth/login/:id/verify", auth.verifyOtp);
     app.post("/api/v1/auth/login", auth.login);
