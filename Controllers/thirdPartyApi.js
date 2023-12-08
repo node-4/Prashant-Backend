@@ -390,7 +390,7 @@ exports.initiateRebill = async (req, res) => {
         if (!merNo || !md5key || !billNo || !amount || !currency || !returnURL || !notifyUrl || !productInfo || !rebillToken) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        const tradeUrl = 'https://testurl.carespay.com:28081/carespay/pay';
+        const tradeUrl = 'https://testurl.carespay.com:28081/carespay/rebill';
         const md5Info =
             crypto.createHash('md5').update(`${merNo}${billNo}${currency}${amount}${returnURL}${md5key}`).digest('hex');
         const requestData = {
