@@ -20,42 +20,42 @@ exports.registration = async (req, res) => {
                 upperCase: false,
                 specialChar: false,
             });
-            const transporter = nodemailer.createTransport({
-                host: "smtp.ethereal.email",
-                port: 587,
-                auth: {
-                    user: "frieda.smitham40@ethereal.email",
-                    pass: "TURy68KCpFSsFyNfjs",
-                },
+            // const transporter = nodemailer.createTransport({
+            //     host: "smtp.ethereal.email",
+            //     port: 587,
+            //     auth: {
+            //         user: "frieda.smitham40@ethereal.email",
+            //         pass: "TURy68KCpFSsFyNfjs",
+            //     },
+            // });
+            // // Define the email options
+            // const mailOptions = {
+            //     to: email,
+            //     from: "node2@flyweis.technology",
+            //     subject: "Password reset request",
+            //     text:
+            //         `OTP ${otp}\n` +
+            //         `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+            //         `your otp is ${otp} ` +
+            //         `for reset password\n\n` +
+            //         `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+            // };
+            // let resultmail = await transporter.sendMail(mailOptions);
+            // if (resultmail) {
+            req.body.otp = otp;
+            req.body.otpExpiration = Date.now() + 3600000;
+            req.body.userType = "USER";
+            req.body.merchantId = await reffralCode();
+            const userCreate = await User.create(req.body);
+            return res.status(200).send({
+                message: "registered successfully ",
+                data: userCreate,
             });
-            // Define the email options
-            const mailOptions = {
-                to: email,
-                from: "node2@flyweis.technology",
-                subject: "Password reset request",
-                text:
-                    `OTP ${otp}\n` +
-                    `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
-                    `your otp is ${otp} ` +
-                    `for reset password\n\n` +
-                    `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-            };
-            let resultmail = await transporter.sendMail(mailOptions);
-            if (resultmail) {
-                req.body.otp = otp;
-                req.body.otpExpiration = Date.now() + 3600000;
-                req.body.userType = "USER";
-                req.body.merchantId = await reffralCode();
-                const userCreate = await User.create(req.body);
-                return res.status(200).send({
-                    message: "registered successfully ",
-                    data: userCreate,
-                });
-            } else {
-                return res.status(500).json({
-                    message: "Could not send email. Please try again later.",
-                });
-            }
+            // } else {
+            //     return res.status(500).json({
+            //         message: "Could not send email. Please try again later.",
+            //     });
+            // }
         } else {
             return res.status(409).send({ message: "Already Exist", data: [] });
         }
